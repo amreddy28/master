@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+      label 'newDocker1'
+    }
+
+    stages {
+        stage('gitpull') {
+            steps {
+			git(
+    url: 'https://github.com/amreddy28/java-examples.git',
+    branch: 'main'
+   
+               )
+           
+            }
+        }
+        stage('build jms-sub') {
+            steps {
+                dir ('jms-subscriber')
+                {
+				sh 'pwd'
+				sh 'mvn clean package'
+				sh 'docker build -t amreddy7/scriber-service-app:001 .'
+				withDockerRegistry([credentialsId: 'DOCHUB123', url: '']){
+                sh "docker push amreddy7/scriber-service-app:001"
+}
+	
+                }
+            }
+        }
+    }
+}
